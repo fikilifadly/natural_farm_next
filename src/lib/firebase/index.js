@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, onValue, ref, set } from "firebase/database";
 import { v4 as uuidv4 } from "uuid";
-import { matchUser } from "../utils";
+import { matchUser } from "../../utils";
 
 const firebaseConfig = {
 	apiKey: process.env.NEXT_PUBLIC_apiKey,
@@ -17,11 +17,15 @@ export const app = initializeApp(firebaseConfig);
 
 export const db = getDatabase(app);
 
-export const writeDatabase = (url, ...data) => {
+export const writeDatabase = (url, data) => {
+	console.log("writeDatabase");
 	const uuid = uuidv4();
+
 	const response = set(ref(db, `${url}/${uuid}`), {
-		...data,
+		data,
 	});
+
+	console.log(response, "==== writeDatabase");
 
 	return response;
 };
@@ -36,12 +40,11 @@ export const isUserExist = (res, email, password) => {
 	return new Promise((resolve, reject) => {
 		onValue(res, (snapshot) => {
 			const snapshots = snapshot.val();
+
 			const user = matchUser(snapshots, email, password);
-			if (user) {
-				resolve(user);
-			} else {
-				reject();
-			}
+			console.log(user, "===== isUserExist");
+
+			resolve(user);
 		});
 	});
 };

@@ -6,7 +6,7 @@ import React from "react";
 const layout = ({ children }) => {
 	let token = cookies().get("Authorization")?.value;
 
-	// if (!token) return redirect("/login");
+	if (!token) return redirect("/login");
 
 	return (
 		<>

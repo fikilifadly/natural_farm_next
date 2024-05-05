@@ -2,28 +2,56 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import InputPassword from "./InputPassword";
+import { isUserExist, readDatabase, writeDatabase } from "@/lib/firebase";
+import toast from "react-hot-toast";
 
-const CustomForm = ({ fields, url, method, type, successpath, title }) => {
+const CustomForm = ({ fields, url, type, successpath, successmessage, title }) => {
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
+	const data = {};
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
 		console.log(e, "====");
-		const [username, email, password] = e.target;
+		try {
+			setLoading(true);
+			for (const field of fields) {
+				data[field.name] = e.target[field.name].value;
+			}
 
-		setLoading(true);
-		// Axios({
-		// 	method,
-		// 	url,
-		// 	data: JSON.stringify(inputs),
-		// })
-		// 	.then((res) => {
-		// 		toast.success(res.data.message);
-		// 		router.push(successpath);
-		// 	})
-		// 	.catch((error) => toast.error(error.response.data.message))
-		// 	.finally(() => setLoading(false));
+			const fieldsName = Object.keys(data);
+
+			for (const field of fieldsName) {
+				if (!data[field]) {
+					throw `${field} is required`;
+				}
+			}
+
+			console.log("masuk2");
+
+			const res = await readDatabase("users");
+
+			const isExist = await isUserExist(res, data.Email, data.Password);
+			if (successpath === "/login") {
+				console.log(isExist, "masuk4");
+
+				if (isExist) {
+					throw `User ${data.Email} already exist`;
+				}
+				await writeDatabase(url, data);
+			}
+
+			if (!isExist) throw `Invalid Email or Password`;
+
+			document.cookie = "Authorization=true";
+			toast.success(successmessage);
+			router.push(successpath);
+		} catch (error) {
+			toast.error(error);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -33,13 +61,18 @@ const CustomForm = ({ fields, url, method, type, successpath, title }) => {
 				{fields.map((field, index) => (
 					<div key={index} className="flex flex-col gap-2 w-full">
 						<label htmlFor={field.type}>{field.placeholder}</label>
-						<input
-							type={field.type}
-							name={field.placeholder}
-							id={field.type}
-							className="w-full p-2 rounded-md shadow-md border border-slate-200"
-							defaultValue={field.value && field.value}
-						/>
+						{field.type === "password" ? (
+							<InputPassword name={field.name} key={index} />
+						) : (
+							<input
+								key={index}
+								type={field.type}
+								name={field.placeholder}
+								id={field.type}
+								className="w-full p-2 rounded-md shadow-md border border-slate-200"
+								defaultValue={field.value && field.value}
+							/>
+						)}
 					</div>
 				))}
 				{/* <ReCAPTCHA sitekey={process.env.NEXT_PUBLIC_R_SITE_KEY as string} onChange={(val) => setCapVal(val)} /> */}

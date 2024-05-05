@@ -4,7 +4,7 @@ import React from "react";
 const page = () => {
 	return (
 		<>
-			<CustomForm title="Register" fields={fields} url="/api/user/register" successpath="/login" method="post" type="logres" />
+			<CustomForm title="Register" fields={fields} url="/users" successpath="/login" successmessage="Register Success" type="logres" />
 		</>
 	);
 };
