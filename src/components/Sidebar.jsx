@@ -31,37 +31,10 @@ const links = [
 	{
 		href: "/",
 		name: "Dashboard",
-		// icon: "/assets/images/icon.png",
-	},
-	{
-		href: "/service",
-		name: "Service",
-		// icon: "/assets/images/icon-1.png",
 	},
 	{
 		href: "/order",
 		name: "Order",
-		// icon: "/assets/images/icon-2.png",
-	},
-	{
-		href: "/customer",
-		name: "Customer",
-		// icon: "/assets/images/icon-3.png",
-	},
-	{
-		href: "/customer-identity",
-		name: "Customer Identity",
-		// icon: "/assets/images/icon-4.png",
-	},
-	{
-		href: "/promo",
-		name: "Promo Code",
-		// icon: "/assets/images/icon-5.png",
-	},
-	{
-		href: "/admin-user",
-		name: "Admin User",
-		// icon: "/assets/images/icon-6.png",
 	},
 ];
 
