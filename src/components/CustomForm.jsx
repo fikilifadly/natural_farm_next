@@ -5,10 +5,10 @@ import { useState } from "react";
 import InputPassword from "./InputPassword";
 import { isUserExist, readDatabase, writeDatabase } from "@/lib/firebase";
 import toast from "react-hot-toast";
-import { getCookie } from "@/utils";
+import { getCookie, removeModalHandler } from "@/utils";
+import { revalidatePath } from "next/cache";
 
-const CustomForm = ({ fields, url, type, successpath, successmessage, title }) => {
-	const [loading, setLoading] = useState(false);
+const CustomForm = ({ fields, url, type, successpath, successmessage, title, setLoading, loading, setData }) => {
 	const router = useRouter();
 	const data = {};
 	console.log("first");
@@ -29,6 +29,7 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title }) =
 					throw `${field} is required`;
 				}
 			}
+			let newData;
 
 			if (type === "logres") {
 				const res = await readDatabase("users");
@@ -50,8 +51,6 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title }) =
 				}
 			} else {
 				const previousData = JSON.parse(localStorage.getItem("data"));
-				console.log("masuuk else logres: ", previousData);
-				let newData;
 
 				if (previousData) {
 					newData = [...previousData, { ...data, user: getCookie("Authorization") }];
@@ -65,7 +64,9 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title }) =
 			}
 
 			toast.success(successmessage);
-			successpath && router.push(successpath);
+
+			setData(newData);
+			successpath ? router.push(successpath) : removeModalHandler();
 		} catch (error) {
 			toast.error(error);
 		} finally {

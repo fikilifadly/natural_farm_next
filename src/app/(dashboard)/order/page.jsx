@@ -37,7 +37,15 @@ const Page = () => {
 			</div>
 			<Table fields={orderField} data={data} loading={loading} idModal="deleteSubtask" getDataByIdHandler={getDataByIdHandler} />
 			<Modal title="Order Form">
-				<CustomForm fields={orderField} url="tasks" submitModalHandler={submitModalHandler} />
+				<CustomForm
+					fields={orderField}
+					url="tasks"
+					loading={loading}
+					setData={setData}
+					setLoading={setLoading}
+					successmessage={"Order Created Successfully"}
+					submitModalHandler={submitModalHandler}
+				/>
 			</Modal>
 		</div>
 	);
@@ -56,11 +64,15 @@ const orderField = [
 	},
 	{
 		type: "number",
+		name: "Quantity",
+	},
+	{
+		type: "number",
 		name: "Discount",
 	},
 	{
 		type: "number",
-		name: "Special Discount",
+		name: "SpecialDiscount",
 	},
 	{
 		type: "select",

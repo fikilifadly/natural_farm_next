@@ -1,3 +1,5 @@
+import { getCurrentDataAttribute, getCurrentTotalPrice, getIndexCategory, rupiahFormat } from "@/utils";
+
 const Table = ({ fields, data, loading, idModal, getDataByIdHandler }) => {
 	const ctaHandler = (e) => {
 		const { id, action } = e.target.dataset;
@@ -18,8 +20,9 @@ const Table = ({ fields, data, loading, idModal, getDataByIdHandler }) => {
 					<tr>
 						<th>No</th>
 						{fields?.map((field) => (
-							<th key={field[0]}>{field[0]}</th>
+							<th key={field.name}>{field.name}</th>
 						))}
+						<th>Total</th>
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -29,7 +32,16 @@ const Table = ({ fields, data, loading, idModal, getDataByIdHandler }) => {
 						data.map((item, index) => (
 							<tr key={index}>
 								<td>{index + 1}</td>
-								{fields.map((field) => (console.log(item[field[1]]), (<td key={index}>{item[field[1]]}</td>)))}
+								{fields.map((field, i) => (
+									<>
+										<td key={index}>
+											{field.name == "Customer" && getCurrentDataAttribute(field.name, item, "label")}
+											{field.name == "Product" || (field.name == "Payment" && getCurrentDataAttribute(field.name, item, "name"))}
+											{field.name != "Product" && field.name != "Customer" && field.name != "Payment" && item[field.name]}
+										</td>
+									</>
+								))}
+								<td>{rupiahFormat(getCurrentTotalPrice("Product", item, item["Quantity"], item["Discount"], item["SpecialDiscount"]))}</td>
 								<td>
 									<div className="flex gap-3">
 										<button className="bg-yellow-400 px-5 py-2 rounded-md text-xs" data-id={item.id} data-action={"edit"} onClick={ctaHandler}>
@@ -45,7 +57,9 @@ const Table = ({ fields, data, loading, idModal, getDataByIdHandler }) => {
 
 					{!loading && data?.length == 0 && (
 						<tr>
-							<td colSpan={fields.length + 2}>No Data Available</td>
+							<td colSpan={fields.length + 2} className="text-center">
+								No Data Available
+							</td>
 						</tr>
 					)}
 
