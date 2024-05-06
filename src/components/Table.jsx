@@ -29,9 +29,7 @@ const Table = ({ fields, data, loading, idModal, getDataByIdHandler }) => {
 						data.map((item, index) => (
 							<tr key={index}>
 								<td>{index + 1}</td>
-								{fields.map((field) => (
-									<td key={field}>{item[field[0]] ? (field[0] == "TaskId" ? item["Task"].title : item[field[0]]) : `Empty ${field[0]}`}</td>
-								))}
+								{fields.map((field) => (console.log(item[field[1]]), (<td key={index}>{item[field[1]]}</td>)))}
 								<td>
 									<div className="flex gap-3">
 										<button className="bg-yellow-400 px-5 py-2 rounded-md text-xs" data-id={item.id} data-action={"edit"} onClick={ctaHandler}>

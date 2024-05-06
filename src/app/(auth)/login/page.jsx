@@ -10,12 +10,10 @@ const fields = [
 	{
 		type: "text",
 		name: "Email",
-		placeholder: "Email",
 	},
 	{
 		type: "password",
 		name: "Password",
-		placeholder: "Password",
 	},
 ];
 

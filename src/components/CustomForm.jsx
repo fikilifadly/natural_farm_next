@@ -5,6 +5,7 @@ import { useState } from "react";
 import InputPassword from "./InputPassword";
 import { isUserExist, readDatabase, writeDatabase } from "@/lib/firebase";
 import toast from "react-hot-toast";
+import { getCookie } from "@/utils";
 
 const CustomForm = ({ fields, url, type, successpath, successmessage, title }) => {
 	const [loading, setLoading] = useState(false);
@@ -29,27 +30,42 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title }) =
 				}
 			}
 
-			const res = await readDatabase("users");
+			if (type === "logres") {
+				const res = await readDatabase("users");
+				const isExist = await isUserExist(res, data.Email, data.Password);
+				if (successpath === "/login") {
+					console.log(isExist, "masuk4");
 
-			const isExist = await isUserExist(res, data.Email, data.Password);
-			if (successpath === "/login") {
-				console.log(isExist, "masuk4");
+					if (isExist) {
+						throw `User ${data.Email} already exist`;
+					}
+					await writeDatabase(url, data);
 
-				if (isExist) {
-					throw `User ${data.Email} already exist`;
+					toast.success(successmessage);
+				} else {
+					if (!isExist) throw `Invalid Email or Password`;
+					console.log(isExist[1].data, "---- ini datanya");
+
+					document.cookie = `Authorization=${isExist[1].data.Username}`;
 				}
-				await writeDatabase(url, data);
-
-				toast.success(successmessage);
 			} else {
-				if (!isExist) throw `Invalid Email or Password`;
-				console.log(isExist[1].data, "---- ini datanya");
+				const previousData = JSON.parse(localStorage.getItem("data"));
+				console.log("masuuk else logres: ", previousData);
+				let newData;
 
-				document.cookie = `Authorization=${isExist[1].data.Username}`;
+				if (previousData) {
+					newData = [...previousData, { ...data, user: getCookie("Authorization") }];
+				} else {
+					newData = [{ ...data, user: getCookie("Authorization") }];
+				}
+
+				console.log(newData, "=== newData");
+
+				localStorage.setItem("data", JSON.stringify(newData));
 			}
 
 			toast.success(successmessage);
-			router.push(successpath);
+			successpath && router.push(successpath);
 		} catch (error) {
 			toast.error(error);
 		} finally {
@@ -59,29 +75,39 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title }) =
 
 	return (
 		<>
-			<h1 className="text-center text-2xl  font-bold">{title}</h1>
+			{title && <h3 className="text-center text-2xl font-bold">{title}</h3>}
+
 			<form className="flex flex-col gap-3 p-5" onSubmit={submitHandler}>
 				{fields.map((field, index) => (
 					<div key={index} className="flex flex-col gap-2 w-full">
 						<label htmlFor={field.type}>{field.placeholder}</label>
-						{field.type === "password" ? (
-							<InputPassword name={field.name} key={index} />
-						) : (
-							<input
-								key={index}
-								type={field.type}
-								name={field.placeholder}
-								id={field.type}
-								className="w-full p-2 rounded-md shadow-md border border-slate-200"
-								defaultValue={field.value && field.value}
-							/>
+						{field.type === "password" && <InputPassword name={field.name} key={index} />}
+						{field.type === "select" && (
+							<select name={field.name} id={field.name} className="select select-bordered w-full">
+								{field.name === "Customer"
+									? field.options.data.map((option, index) => (
+											<option key={index} value={option.id}>
+												{option.label}
+											</option>
+									  ))
+									: field.options.map((option, index) => (
+											<option key={index} value={option.id}>
+												{option.name}
+											</option>
+									  ))}
+							</select>
 						)}
+						{field.type !== "password" && field.type !== "select" && field.type !== "number" && (
+							<input type={field.type} placeholder={field.name} className="input input-bordered w-full" name={field.name} />
+						)}
+						{field.type === "number" && <input type={field.type} placeholder={field.name} className="input input-bordered w-full" min={0} max={100} name={field.name} />}
 					</div>
 				))}
-				{/* <ReCAPTCHA sitekey={process.env.NEXT_PUBLIC_R_SITE_KEY as string} onChange={(val) => setCapVal(val)} /> */}
+
 				<button className="btn bg-green-500 mt-5 text-white shadow-md transition-all duration-100 hover:text-green-500 hover:bg-white " disabled={loading ? true : false}>
 					{loading ? <span className="loading loading-spinner loading-sm"></span> : "Submit"}
 				</button>
+
 				{type === "logres" && successpath == "/login" && (
 					<p className="text-center">
 						Already have an account?{" "}
@@ -90,6 +116,7 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title }) =
 						</Link>
 					</p>
 				)}
+
 				{type === "logres" && successpath != "/login" && (
 					<p className="text-center">
 						Doesnt have an account?{" "}

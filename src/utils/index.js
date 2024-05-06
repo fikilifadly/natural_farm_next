@@ -13,3 +13,11 @@ export const matchUser = (snapshot, email, password) => {
 };
 
 export const showModalHandler = (id) => document.getElementById(id ? id : "mainmodal").showModal();
+
+export const getCookie = (name) => {
+	const cookieValue = document.cookie
+		.split("; ")
+		.find((row) => row.startsWith(name + "="))
+		.split("=")[1];
+	return cookieValue ? decodeURIComponent(cookieValue) : null;
+};
