@@ -1,0 +1,45 @@
+{
+	"status": "success",
+	"data": [
+		{
+			"id": 1,
+			"member_id": 2,
+			"label": "Ahmad Syahroni - Jln. Duri Tol Raya No 2, Kebon Jeruk, Jakarta Barat, DKIJakarta-11520",
+			"phone": "081291321471",
+			"address_id": 1,
+			"customer_name": "Ahmad Syahroni",
+			"email": "ahmadsyah@gmail.com",
+			"address": "Jln. Duri Tol Raya No 2, Kebon Jeruk, Jakarta Barat, DKI Jakarta-11520"
+		},
+		{
+			"id": 2,
+			"member_id": 2,
+			"label": "Elsa - Jl Cipinang Besar RT 002/10, DKI Jakarta",
+			"phone": "081366559988",
+			"address_id": 18,
+			"customer_name": "Elsa",
+			"email": "elsa@gmail.com",
+			"address": "Jl Cipinang Besar RT 002/10, DKI Jakarta"
+		},
+		{
+			"id": 3,
+			"member_id": 3,
+			"label": "Samuel - Kompl Ruko Metro Sunter Bl B/24, DKI Jakarta",
+			"phone": "085744332211",
+			"address_id": 33,
+			"customer_name": "Samuel",
+			"email": "samuel@gmail.com",
+			"address": "Kompl Ruko Metro Sunter Bl B/24, DKI Jakarta"
+		},
+		{
+			"id": 4,
+			"member_id": 4,
+			"label": "Fadel - Jl Binjai P Baris Km 8,5/13 C, Sumatera Utara",
+			"phone": "083398706654",
+			"address_id": 41,
+			"customer_name": "Fadel",
+			"email": "fadel@gmail.com",
+			"address": "Jl Binjai P Baris Km 8,5/13 C, Sumatera Utara"
+		}
+	]
+}

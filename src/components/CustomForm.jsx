@@ -10,6 +10,7 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title }) =
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 	const data = {};
+	console.log("first");
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
@@ -28,8 +29,6 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title }) =
 				}
 			}
 
-			console.log("masuk2");
-
 			const res = await readDatabase("users");
 
 			const isExist = await isUserExist(res, data.Email, data.Password);
@@ -40,11 +39,15 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title }) =
 					throw `User ${data.Email} already exist`;
 				}
 				await writeDatabase(url, data);
+
+				toast.success(successmessage);
+			} else {
+				if (!isExist) throw `Invalid Email or Password`;
+				console.log(isExist[1].data, "---- ini datanya");
+
+				document.cookie = `Authorization=${isExist[1].data.Username}`;
 			}
 
-			if (!isExist) throw `Invalid Email or Password`;
-
-			document.cookie = "Authorization=true";
 			toast.success(successmessage);
 			router.push(successpath);
 		} catch (error) {

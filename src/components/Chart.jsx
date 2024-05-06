@@ -8,12 +8,13 @@ const Chart = ({ labels, datasets, title }) => {
 	const options = {
 		responsive: true,
 		plugins: {
-			legend: {
-				position: "top",
-			},
 			title: {
 				display: true,
 				text: title,
+			},
+			legend: false,
+			tooltip: {
+				enabled: false,
 			},
 		},
 	};
@@ -24,11 +25,12 @@ const Chart = ({ labels, datasets, title }) => {
 	};
 
 	return (
-		<>
-			<div className="p-5 flex self-center w-[75%] mx-auto">
+		<div className="mt-5">
+			<h3 className="font-bold text-xl">Summary of recent record</h3>
+			<div className="px-5 flex self-center w-full md:w-[75%] mx-auto">
 				<Line options={options} data={data} />
 			</div>
-		</>
+		</div>
 	);
 };
 

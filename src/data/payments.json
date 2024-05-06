@@ -1,0 +1,32 @@
+[
+	{
+		"id": 1,
+		"name": "Transfer",
+		"code_payment": "tf_manual",
+		"num_index": 1
+	},
+	{
+		"id": 8,
+		"name": "Shopeepay",
+		"code_payment": "shopeepay",
+		"num_index": 5
+	},
+	{
+		"id": 5,
+		"name": "Credit Card/Debit Card",
+		"code_payment": "credit_card",
+		"num_index": 2
+	},
+	{
+		"id": 7,
+		"name": "Go-Pay",
+		"code_payment": "gopay",
+		"num_index": 4
+	},
+	{
+		"id": 6,
+		"name": "Virtual Account",
+		"code_payment": "permata_va,bca_va,bni_va,other_va,echannel,bri_va",
+		"num_index": 3
+	}
+]

@@ -11,3 +11,5 @@ export const matchUser = (snapshot, email, password) => {
 
 	return match;
 };
+
+export const showModalHandler = (id) => document.getElementById(id ? id : "mainmodal").showModal();
