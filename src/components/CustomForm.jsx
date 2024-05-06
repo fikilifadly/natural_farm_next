@@ -35,19 +35,19 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title, set
 	const data = {};
 
 	const submitHandler = async (e) => {
-		e.preventDefault();
-		console.log(e, "====");
 		try {
-			setLoading(true);
+			e.preventDefault();
+
 			for (const field of fields) {
 				data[field.name] = e.target[field.name].value;
 			}
 
+			console.log(data, "data===");
 			const fieldsName = Object.keys(data);
 
 			for (const field of fieldsName) {
 				if (!data[field]) {
-					throw `${field} is required`;
+					throw new Error(`${field} is required`);
 				}
 			}
 			let newData;
@@ -59,18 +59,19 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title, set
 					console.log(isExist, "masuk4");
 
 					if (isExist) {
-						throw `User ${data.Email} already exist`;
+						throw new Error(`User ${data.Email} already exist`);
 					}
 					await writeDatabase(url, data);
 
 					toast.success(successmessage);
 				} else {
-					if (!isExist) throw `Invalid Email or Password`;
+					if (!isExist) throw new Error(`Invalid Email or Password`);
 					console.log(isExist[1].data, "---- ini datanya");
 
 					document.cookie = `Authorization=${isExist[1].data.Username}`;
 				}
 			} else {
+				setLoading(true);
 				const previousData = JSON.parse(localStorage.getItem("data"));
 
 				if (previousData) {
@@ -82,16 +83,17 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title, set
 				console.log(newData, "=== newData");
 
 				localStorage.setItem("data", JSON.stringify(newData));
+				setData(newData);
 			}
 
 			toast.success(successmessage);
 
-			setData(newData);
 			successpath ? router.push(successpath) : removeModalHandler();
 		} catch (error) {
-			toast.error(error);
+			console.log(error.message, "=====");
+			toast.error(error.message);
 		} finally {
-			setLoading(false);
+			if (type !== "logres") setLoading(false);
 		}
 	};
 
@@ -105,7 +107,7 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title, set
 						<label htmlFor={field.type}>{field.name}</label>
 						{field.type === "password" && <InputPassword name={field.name} key={index} />}
 						{field.type === "select" && (
-							<select name={field.name} id={field.name} onChange={field.name !== "Customer" ? onChangeHandler : null} className="select select-bordered w-full">
+							<select name={field.name} id={field.name} onChange={field.name !== "Customer" ? onChangeHandler : null} className="select select-bordered w-full" key={index}>
 								{field.name === "Customer"
 									? field.options.data.map((option, index) => (
 											<option key={index} value={option.id}>
@@ -120,7 +122,7 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title, set
 							</select>
 						)}
 						{field.type !== "password" && field.type !== "select" && field.type !== "number" && (
-							<input type={field.type} placeholder={field.name} className="input input-bordered w-full" name={field.name} />
+							<input type={field.type} placeholder={field.name} className="input input-bordered w-full" name={field.name} key={index} />
 						)}
 						{field.type === "number" && (
 							<input
@@ -132,6 +134,7 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title, set
 								min="0"
 								max="100"
 								name={field.name}
+								key={index}
 							/>
 						)}
 					</div>
