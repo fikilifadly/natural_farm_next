@@ -10,8 +10,29 @@ import { revalidatePath } from "next/cache";
 
 const CustomForm = ({ fields, url, type, successpath, successmessage, title, setLoading, loading, setData }) => {
 	const router = useRouter();
+	const [simulation, setSimulation] = useState({
+		Price: 208000,
+		Discount: 0,
+		SpecialDiscount: 0,
+		Quantity: 1,
+	});
+
+	const priceQuantity = simulation.Price * (simulation.Quantity == 0 || simulation.Quantity.length == 0 ? 1 : simulation.Quantity);
+	const priceDiscount = priceQuantity * (simulation.Discount == 0 || simulation.Discount.length == 0 ? 0 : simulation.Discount / 100);
+	const priceSpecialDiscount = priceQuantity * (simulation.SpecialDiscount == 0 || simulation.SpecialDiscount.length == 0 ? 0 : simulation.SpecialDiscount / 100);
+	const total = priceQuantity - priceDiscount - priceSpecialDiscount;
+
+	const onChangeHandler = (e) => {
+		const { name, value } = e.target;
+		console.log(name, value);
+		if (name === "Discount" || name === "SpecialDiscount") {
+			if (value >= 0 && value <= 100) setSimulation((prev) => ({ ...prev, [name]: value }));
+		} else if (name === "Quantity" && value >= 0) {
+			setSimulation((prev) => ({ ...prev, [name]: value }));
+		}
+	};
+
 	const data = {};
-	console.log("first");
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
@@ -81,10 +102,10 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title, set
 			<form className="flex flex-col gap-3 p-5" onSubmit={submitHandler}>
 				{fields.map((field, index) => (
 					<div key={index} className="flex flex-col gap-2 w-full">
-						<label htmlFor={field.type}>{field.placeholder}</label>
+						<label htmlFor={field.type}>{field.name}</label>
 						{field.type === "password" && <InputPassword name={field.name} key={index} />}
 						{field.type === "select" && (
-							<select name={field.name} id={field.name} className="select select-bordered w-full">
+							<select name={field.name} id={field.name} onChange={field.name !== "Customer" ? onChangeHandler : null} className="select select-bordered w-full">
 								{field.name === "Customer"
 									? field.options.data.map((option, index) => (
 											<option key={index} value={option.id}>
@@ -101,9 +122,41 @@ const CustomForm = ({ fields, url, type, successpath, successmessage, title, set
 						{field.type !== "password" && field.type !== "select" && field.type !== "number" && (
 							<input type={field.type} placeholder={field.name} className="input input-bordered w-full" name={field.name} />
 						)}
-						{field.type === "number" && <input type={field.type} placeholder={field.name} className="input input-bordered w-full" min={0} max={100} name={field.name} />}
+						{field.type === "number" && (
+							<input
+								type={field.type}
+								value={simulation[field.name]}
+								onChange={onChangeHandler}
+								placeholder={field.name}
+								className="input input-bordered w-full"
+								min="0"
+								max="100"
+								name={field.name}
+							/>
+						)}
 					</div>
 				))}
+
+				{type !== "logres" && (
+					<div className="flex flex-col gap-2">
+						<div className="flex justify-between">
+							<span>Price :</span>
+							<span className="text-green-500 font-bold">{priceQuantity}</span>
+						</div>
+						<div className="flex justify-between">
+							<span>Discount :</span>
+							<span className="text-green-500 font-bold">{priceDiscount > 0 ? "- " + priceDiscount : 0}</span>
+						</div>
+						<div className="flex justify-between">
+							<span>Special Discount :</span>
+							<span className="text-green-500 font-bold">{priceSpecialDiscount > 0 ? "- " + priceSpecialDiscount : 0}</span>
+						</div>
+						<div className="flex justify-between">
+							<span>Total :</span>
+							<span className="text-green-500 font-bold">{total}</span>
+						</div>
+					</div>
+				)}
 
 				<button className="btn bg-green-500 mt-5 text-white shadow-md transition-all duration-100 hover:text-green-500 hover:bg-white " disabled={loading ? true : false}>
 					{loading ? <span className="loading loading-spinner loading-sm"></span> : "Submit"}
